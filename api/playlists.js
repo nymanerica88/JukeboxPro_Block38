@@ -35,8 +35,17 @@ router.param("id", async (req, res, next, id) => {
   next();
 });
 
-router.get("/:id", (req, res) => {
-  res.send(req.playlist);
+router.get("/:id", requireUser, async (req, res) => {
+  const playlistId = Number(req.params.id);
+  const playlist = await getTracksByPlaylistId(playlistId);
+  if (!playlist) {
+    return res.status(404).send("Playlist not found");
+  }
+
+  if (playlist.user_id !== req.user.id) {
+    return res.status(403).send("Forbidden");
+  }
+  res.status(200).send(req.playlist);
 });
 
 router.get("/:id/tracks", async (req, res) => {
