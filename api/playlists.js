@@ -1,4 +1,5 @@
 import express from "express";
+import requireUser from "#middleware/requireUser";
 const router = express.Router();
 export default router;
 
@@ -10,12 +11,12 @@ import {
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
 
-router.get("/", async (req, res) => {
+router.get("/", requireUser, async (req, res) => {
   const playlists = await getPlaylists();
   res.send(playlists);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireUser, async (req, res) => {
   if (!req.body) return res.status(400).send("Request body is required.");
 
   const { name, description } = req.body;
